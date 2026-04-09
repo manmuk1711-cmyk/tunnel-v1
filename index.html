@@ -85,6 +85,14 @@ let light = new THREE.PointLight(0xffffff,1);
 light.position.set(0,5,5);
 scene.add(light);
 
+//TESTT CUBE
+let testCube = new THREE.Mesh(
+  new THREE.BoxGeometry(1,1,1),
+  new THREE.MeshBasicMaterial({color:0x00ff00})
+);
+testCube.position.set(0,1.5,-5);
+scene.add(testCube);
+
 // PLAYER
 let player = new THREE.Object3D();
 player.position.set(0,1.5,0);

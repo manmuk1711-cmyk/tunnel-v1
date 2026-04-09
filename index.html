@@ -21,6 +21,7 @@ body { margin:0; overflow:hidden; background:black; }
   height:100%;
   background:rgba(0,255,255,0);
   pointer-events:none;
+  z-index: 5;
 }
 </style>
 </head>
@@ -47,6 +48,7 @@ body { margin:0; overflow:hidden; background:black; }
   color:white;
   font-family:Arial;
   background:rgba(0,0,0,0.7);
+  z-index: 10;
 ">
 
   <h1>You have become part of the system</h1>
@@ -65,6 +67,7 @@ body { margin:0; overflow:hidden; background:black; }
   
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 
@@ -120,35 +123,11 @@ window.addEventListener("keyup",e=>{
 });
 
 // TUNNEL
-function createSegment(z,type){
-  let color = type==="water"?0x0a1a3a:0x0a2a0a;
-  let mat = new THREE.MeshStandardMaterial({color});
-
-  let floor = new THREE.Mesh(new THREE.PlaneGeometry(20,10),mat);
-  floor.rotation.x = -Math.PI/2;
-  floor.position.set(0,0,z);
-
-  let wallL = new THREE.Mesh(new THREE.PlaneGeometry(10,10),mat);
-  wallL.position.set(-10,5,z);
-  wallL.rotation.y = Math.PI/2;
-
-  let wallR = wallL.clone();
-  wallR.position.set(10,5,z);
-  wallR.rotation.y = -Math.PI/2;
-
-  let ceiling = floor.clone();
-  ceiling.position.set(0,10,z);
-  ceiling.rotation.x = Math.PI/2;
-
-  scene.add(floor,wallL,wallR,ceiling);
-}
-
-for(let i=0;i<40;i++){
-  createSegment(-i*10, i%2===0?"water":"forest");
-}
+let tunnels = [];
 
 // THREATS
 let threats = [];
+
 
 function createThreat(z,type){
   let t = new THREE.Mesh(
@@ -168,6 +147,25 @@ function createThreat(z,type){
 for(let i=1;i<30;i++){
   createThreat(-i*20, Math.random()>0.5?"AT":"PT");
 }
+
+//gltb loader
+let loader = new THREE.GLTFLoader();
+
+loader.load("tunnel.glb", function(gltf){
+
+  let model = gltf.scene;
+
+  for(let i=0;i<10;i++){
+
+    let segment = model.clone();
+
+    segment.position.set(0,0,-i*20); // spacing
+    scene.add(segment);
+
+    tunnels.push(segment);
+  }
+
+});
 
 // GAME STATE
 let speed = 0.2;
@@ -210,6 +208,15 @@ if((keys["w"] || systemLocked) && endScreen.style.display !== "flex"){
 
   threats.forEach(t=>{
     t.position.z += moveSpeed;
+
+  tunnels.forEach(t=>{
+  t.position.z += moveSpeed;
+
+  // LOOP
+  if(t.position.z > 20){
+    t.position.z -= 200;
+  }
+});
 
     // LOOP RESET
     if(t.position.z > 10){

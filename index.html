@@ -155,22 +155,26 @@ loader.load("Tunnel5_GS.glb", function(gltf){
 
   let model = gltf.scene;
 
+  model.traverse(obj => {
+    if(obj.isMesh){
+      obj.material = new THREE.MeshStandardMaterial({ color: 0x444444 });
+    }
+  });
+
   for(let i=0;i<10;i++){
 
-  let segment = model.clone();
+    let segment = model.clone(true); // ✅ deep clone
 
-  segment.scale.set(2,2,2);
-  segment.position.y = -1;
-  segment.rotation.y = Math.PI;
+    segment.scale.set(5,5,5);       // 🔥 bigger so you SEE it
+    segment.position.set(0,0,-i*30); // spacing increased
 
-  segment.position.z = -i*20;
+    scene.add(segment);
+    tunnels.push(segment);
+  }
 
-  scene.add(segment);
-  tunnels.push(segment);
-    
-    }
-
-  });
+}, undefined, function(error){
+  console.error("GLB ERROR:", error);
+});
 
 // GAME STATE
 let speed = 0.2;
@@ -226,8 +230,8 @@ threats.forEach(threat=>{
 tunnels.forEach(tunnel=>{
   tunnel.position.z += moveSpeed;
 
-  if(tunnel.position.z > 20){
-    tunnel.position.z -= 200;
+  if(tunnel.position.z > 30){
+    tunnel.position.z -= 300;
   }
 });
 
@@ -268,10 +272,10 @@ if(cooldown){
 threats.forEach(t=>{
   t.position.y = 1.5 + Math.sin(Date.now()*0.002 + t.position.z)*0.3;
 
-  if(t.position.z > 10){
-  t.position.z = -600; // send back far
-  t.userData.triggered = false;
-}
+  ///if(t.position.z > 10){
+  ///t.position.z = -600; // send back far
+ /// t.userData.triggered = false;
+//}
 
   let dist = Math.abs(t.position.z);
 

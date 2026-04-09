@@ -36,6 +36,34 @@ body { margin:0; overflow:hidden; background:black; }
 
 <div id="overlay"></div>
 
+<div id="endScreen" style="
+  position:absolute;
+  width:100%;
+  height:100%;
+  display:none;
+  justify-content:center;
+  align-items:center;
+  flex-direction:column;
+  color:white;
+  font-family:Arial;
+  background:rgba(0,0,0,0.7);
+">
+
+  <h1>You have become part of the system</h1>
+
+  <button onclick="location.reload()" style="
+    padding:12px 24px;
+    font-size:18px;
+    margin-top:20px;
+    cursor:pointer;
+  ">
+    Restart
+  </button>
+
+</div>
+  
+  
+
 <script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
 
 <script>
@@ -158,6 +186,7 @@ let COOLDOWN_TIME = 3000;
 let systemLocked = false;
 
 let overlay = document.getElementById("overlay");
+let endScreen = document.getElementById("endScreen");
 
 // ARMOUR FUNCTION
 function activateArmour(){
@@ -175,14 +204,21 @@ function animate(){
 requestAnimationFrame(animate);
 
 // MOVEMENT
-if(systemLocked){
+let moveSpeed = systemLocked ? speed * 0.5 : speed;
+
+if((keys["w"] || systemLocked) && endScreen.style.display !== "flex"){
+
   threats.forEach(t=>{
-    t.position.z += speed * 0.5;
+    t.position.z += moveSpeed;
+
+    // LOOP RESET
+    if(t.position.z > 10){
+      t.position.z -= 600;
+      t.userData.triggered = false;
+      t.position.x = 0; // reset dodge drift
+    }
   });
-} else if(keys["w"]){
-  threats.forEach(t=>{
-    t.position.z += speed;
-  });
+
 }
 
 // ARMOUR STATE
@@ -249,8 +285,12 @@ threats.forEach(t=>{
 if(armourUses >= MAX_ARMOUR && !systemLocked){
   systemLocked = true;
 
+  // move camera to 3rd person
   camera.position.set(0,3,6);
   camera.lookAt(player.position);
+
+  // show message
+  endScreen.style.display = "flex";
 }
 
 // RENDER

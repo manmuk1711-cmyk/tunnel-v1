@@ -310,35 +310,7 @@ if(armourUses >= MAX_ARMOUR && !systemLocked){
 renderer.render(scene,camera);
 }
 
-  function resetGame(){
 
-  // reset player
-  player.position.set(0,1.5,0);
-
-  // reset tunnels
-  tunnels.forEach((t, i)=>{
-    t.position.set(0,0,-i*20);
-  });
-
-  // reset threats
-  threats.forEach((t, i)=>{
-    t.position.set(0,1.5,-(i+1)*20);
-    t.userData.triggered = false;
-  });
-
-  // reset state
-  armourUses = 0;
-  armourActive = false;
-  cooldown = false;
-  systemLocked = false;
-
-  document.getElementById("count").innerText = 0;
-  document.getElementById("cooldown").innerText = "Ready";
-
-  // reset camera
-  camera.position.set(0,1.5,2);
-  player.add(camera);
-}
 
 animate();
 

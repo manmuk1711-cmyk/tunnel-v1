@@ -186,15 +186,61 @@ function activateArmour(){
   document.getElementById("count").innerText = armourUses;
 }
 
+
+  //RESET
+  function resetGame(){
+
+  // reset player
+  player.position.set(0,1.5,0);
+
+  // reset tunnels
+  tunnels.forEach((t, i)=>{
+    t.position.set(0,0,-i*20);
+  });
+
+  // reset threats
+  threats.forEach((t, i)=>{
+    t.position.set(0,1.5,-(i+1)*20);
+    t.userData.triggered = false;
+  });
+
+  // reset state
+  armourUses = 0;
+  armourActive = false;
+  cooldown = false;
+  systemLocked = false;
+
+  document.getElementById("count").innerText = 0;
+  document.getElementById("cooldown").innerText = "Ready";
+
+  // reset camera
+  camera.position.set(0,1.5,2);
+  player.add(camera);
+}
+
+  
 // LOOP
 function animate(){
 requestAnimationFrame(animate);
 
 // MOVEMENT
 if(systemLocked){
-  player.position.z -= speed * 0.5;
+  tunnels.forEach(t=>{
+    t.position.z += speed * 0.5;
+  });
+
+  threats.forEach(t=>{
+    t.position.z += speed * 0.5;
+  });
+
 } else if(keys["w"]){
-  player.position.z -= speed;
+  tunnels.forEach(t=>{
+    t.position.z += speed;
+  });
+
+  threats.forEach(t=>{
+    t.position.z += speed;
+  });
 }
 
 // ARMOUR STATE
@@ -239,7 +285,7 @@ threats.forEach(t=>{
     if(t.userData.type==="AT"){
       if(!armourActive){
         alert("You were hit. Loop restarts.");
-        location.reload();
+        resetGame();
       }
     }
 
@@ -262,6 +308,36 @@ if(armourUses >= MAX_ARMOUR && !systemLocked){
 
 // RENDER
 renderer.render(scene,camera);
+}
+
+  function resetGame(){
+
+  // reset player
+  player.position.set(0,1.5,0);
+
+  // reset tunnels
+  tunnels.forEach((t, i)=>{
+    t.position.set(0,0,-i*20);
+  });
+
+  // reset threats
+  threats.forEach((t, i)=>{
+    t.position.set(0,1.5,-(i+1)*20);
+    t.userData.triggered = false;
+  });
+
+  // reset state
+  armourUses = 0;
+  armourActive = false;
+  cooldown = false;
+  systemLocked = false;
+
+  document.getElementById("count").innerText = 0;
+  document.getElementById("cooldown").innerText = "Ready";
+
+  // reset camera
+  camera.position.set(0,1.5,2);
+  player.add(camera);
 }
 
 animate();

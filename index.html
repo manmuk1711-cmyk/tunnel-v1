@@ -37,6 +37,7 @@ body { margin:0; overflow:hidden; background:black; }
 <div id="overlay"></div>
 
 <script src="https://cdn.jsdelivr.net/npm/three@0.158/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.158/examples/js/loaders/GLTFLoader.js"></script>
 
 <script>
 
@@ -48,6 +49,23 @@ let camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
 let renderer = new THREE.WebGLRenderer();
 renderer.setSize(innerWidth, innerHeight);
 document.body.appendChild(renderer.domElement);
+
+//loader
+let loader = new THREE.GLTFLoader();
+let tunnels = [];
+
+loader.load('tunnel.glb', function(gltf){
+
+  for(let i=0;i<5;i++){
+    let clone = gltf.scene.clone();
+
+    clone.position.set(0,0,-i*20);
+
+    scene.add(clone);
+    tunnels.push(clone);
+  }
+
+});
 
 // LIGHT
 let light = new THREE.PointLight(0xffffff,1);
@@ -115,9 +133,7 @@ function createSegment(z,type){
   scene.add(floor,wallL,wallR,ceiling);
 }
 
-for(let i=0;i<40;i++){
-  createSegment(-i*10, i%2===0?"water":"forest");
-}
+
 
 // THREATS
 let threats = [];

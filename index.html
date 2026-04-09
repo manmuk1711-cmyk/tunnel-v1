@@ -151,21 +151,26 @@ for(let i=1;i<30;i++){
 //gltb loader
 let loader = new THREE.GLTFLoader();
 
-loader.load("tunnel.glb", function(gltf){
+loader.load("Tunnel5_GS.glb", function(gltf){
 
   let model = gltf.scene;
 
   for(let i=0;i<10;i++){
 
-    let segment = model.clone();
+  let segment = model.clone();
 
-    segment.position.set(0,0,-i*20); // spacing
-    scene.add(segment);
+  segment.scale.set(2,2,2);
+  segment.position.y = -1;
+  segment.rotation.y = Math.PI;
 
-    tunnels.push(segment);
-  }
+  segment.position.z = -i*20;
 
-});
+  scene.add(segment);
+  tunnels.push(segment);
+    
+    }
+
+  });
 
 // GAME STATE
 let speed = 0.2;
@@ -206,25 +211,25 @@ let moveSpeed = systemLocked ? speed * 0.5 : speed;
 
 if((keys["w"] || systemLocked) && endScreen.style.display !== "flex"){
 
-  threats.forEach(t=>{
-    t.position.z += moveSpeed;
+  // ✅ MOVE THREATS
+threats.forEach(threat=>{
+  threat.position.z += moveSpeed;
 
-  tunnels.forEach(t=>{
-  t.position.z += moveSpeed;
-
-  // LOOP
-  if(t.position.z > 20){
-    t.position.z -= 200;
+  if(threat.position.z > 10){
+    threat.position.z -= 600;
+    threat.userData.triggered = false;
+    threat.position.x = 0;
   }
 });
 
-    // LOOP RESET
-    if(t.position.z > 10){
-      t.position.z -= 600;
-      t.userData.triggered = false;
-      t.position.x = 0; // reset dodge drift
-    }
-  });
+// ✅ MOVE TUNNEL (SEPARATE)
+tunnels.forEach(tunnel=>{
+  tunnel.position.z += moveSpeed;
+
+  if(tunnel.position.z > 20){
+    tunnel.position.z -= 200;
+  }
+});
 
 }
 

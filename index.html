@@ -68,9 +68,11 @@ loader.load('tunnel.glb', function(gltf){
 });
 
 // LIGHT
-let light = new THREE.PointLight(0xffffff,1);
+let light = new THREE.PointLight(0xffffff, 2, 100);
 light.position.set(0,5,5);
 scene.add(light);
+let ambient = new THREE.AmbientLight(0xffffff, 0.6);
+scene.add(ambient);
 
 // PLAYER
 let player = new THREE.Object3D();

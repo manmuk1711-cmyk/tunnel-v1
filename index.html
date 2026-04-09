@@ -164,7 +164,7 @@ loader.load(
   "Tunnel5_GS.glb",
 
   function(gltf){
-    console.log("GLB loaded successfully");
+    console.log("GLB loaded");
 
     let model = gltf.scene;
 
@@ -180,6 +180,25 @@ loader.load(
       tunnels.push(segment);
     }
   },
+
+  undefined,
+
+  function(error){
+    console.error("GLB FAILED:", error);
+
+    for(let i=0;i<10;i++){
+      let geo = new THREE.CylinderGeometry(5,5,20,16,1,true);
+      let mat = new THREE.MeshBasicMaterial({wireframe:true});
+      let tunnel = new THREE.Mesh(geo, mat);
+
+      tunnel.rotation.z = Math.PI/2;
+      tunnel.position.z = -i * 20;
+
+      scene.add(tunnel);
+      tunnels.push(tunnel);
+    }
+  }
+);
 
   undefined,
 

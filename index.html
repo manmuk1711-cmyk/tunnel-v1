@@ -176,9 +176,13 @@ requestAnimationFrame(animate);
 
 // MOVEMENT
 if(systemLocked){
-  player.position.z -= speed * 0.5;
+  threats.forEach(t=>{
+    t.position.z += speed * 0.5;
+  });
 } else if(keys["w"]){
-  player.position.z -= speed;
+  threats.forEach(t=>{
+    t.position.z += speed;
+  });
 }
 
 // ARMOUR STATE
@@ -216,7 +220,12 @@ if(cooldown){
 threats.forEach(t=>{
   t.position.y = 1.5 + Math.sin(Date.now()*0.002 + t.position.z)*0.3;
 
-  let dist = Math.abs(player.position.z - t.position.z);
+  if(t.position.z > 10){
+  t.position.z = -600; // send back far
+  t.userData.triggered = false;
+}
+
+  let dist = Math.abs(t.position.z);
 
   if(dist < 3 && !t.userData.triggered){
 

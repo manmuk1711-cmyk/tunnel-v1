@@ -73,7 +73,7 @@ body { margin:0; overflow:hidden; background:black; }
 
 // SCENE
 let scene = new THREE.Scene();
-scene.fog = new THREE.Fog(0x000000, 10, 60);
+scene.fog = new THREE.Fog(0x000000, 20, 200);
 
 let camera = new THREE.PerspectiveCamera(75, innerWidth/innerHeight, 0.1, 1000);
 let renderer = new THREE.WebGLRenderer();
@@ -149,32 +149,49 @@ for(let i=1;i<30;i++){
 }
 
 //gltb loader
+  
 let loader = new THREE.GLTFLoader();
 
-loader.load("Tunnel5_GS.glb", function(gltf){
+loader.load(
+  "Tunnel5_GS.glb",
 
-  let model = gltf.scene;
+  function(gltf){
+    console.log("GLB loaded successfully");
 
-  model.traverse(obj => {
-    if(obj.isMesh){
-      obj.material = new THREE.MeshStandardMaterial({ color: 0x444444 });
+    let model = gltf.scene;
+
+    for(let i=0;i<10;i++){
+      let segment = model.clone();
+
+      segment.scale.set(2,2,2);
+      segment.position.y = -1;
+      segment.rotation.y = Math.PI;
+      segment.position.z = -i * 20;
+
+      scene.add(segment);
+      tunnels.push(segment);
     }
-  });
+  },
 
-  for(let i=0;i<10;i++){
+  undefined,
 
-    let segment = model.clone(true); // ✅ deep clone
+  function(error){
+    console.error("GLB FAILED:", error);
 
-    segment.scale.set(5,5,5);       // 🔥 bigger so you SEE it
-    segment.position.set(0,0,-i*30); // spacing increased
+    // fallback tunnel (so screen is NOT black)
+    for(let i=0;i<10;i++){
+      let geo = new THREE.CylinderGeometry(5,5,20,16,1,true);
+      let mat = new THREE.MeshBasicMaterial({wireframe:true});
+      let tunnel = new THREE.Mesh(geo, mat);
 
-    scene.add(segment);
-    tunnels.push(segment);
+      tunnel.rotation.z = Math.PI/2;
+      tunnel.position.z = -i * 20;
+
+      scene.add(tunnel);
+      tunnels.push(tunnel);
+    }
   }
-
-}, undefined, function(error){
-  console.error("GLB ERROR:", error);
-});
+);
 
 // GAME STATE
 let speed = 0.2;
@@ -272,9 +289,9 @@ if(cooldown){
 threats.forEach(t=>{
   t.position.y = 1.5 + Math.sin(Date.now()*0.002 + t.position.z)*0.3;
 
-  ///if(t.position.z > 10){
-  ///t.position.z = -600; // send back far
- /// t.userData.triggered = false;
+  //if(t.position.z > 10){
+  //t.position.z = -600; // send back far
+ // t.userData.triggered = false;
 //}
 
   let dist = Math.abs(t.position.z);
